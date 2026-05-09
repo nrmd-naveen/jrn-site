@@ -56,7 +56,7 @@ export default function HomePage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-8">
              {[
                { label: 'Impact Factor', val: '8.01' },
-               { label: 'ISSN', val: '2349-6002' },
+               { label: 'ISSN', val: '2278-0183' },
                { label: 'Published Papers', val: '1240+' },
                { label: 'Review Time', val: '15 Days' }
              ].map(stat => (

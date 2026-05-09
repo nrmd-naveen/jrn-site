@@ -14,7 +14,7 @@ const Navbar = ({ isAdmin = false }) => {
           <div>
             <h1 className="text-2xl font-serif font-bold tracking-tight leading-tight">JIESURT</h1>
             <p className="text-[10px] opacity-90 uppercase tracking-widest font-semibold italic">International Journal of Innovative Engineering Science and Universal Research Trends</p>
-            <p className="text-[9px] mt-1 opacity-80">Peer-Reviewed | Refereed | Open Access | ISSN: 2349-6002</p>
+            <p className="text-[9px] mt-1 opacity-80">Peer-Reviewed | Refereed | Open Access | ISSN: 2278-0183</p>
           </div>
         </div>
         <div className="text-right hidden sm:block">

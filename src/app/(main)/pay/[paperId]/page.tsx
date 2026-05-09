@@ -4,7 +4,7 @@ import PaymentClient from './PaymentClient';
 
 export default async function PayPage({ params }: { params: Promise<{ paperId: string }> }) {
   const { paperId } = await params;
-  const submissions = getSubmissions();
+  const submissions = await getSubmissions();
   const paper = submissions.find((s: any) => s.id === paperId);
 
   if (!paper) {

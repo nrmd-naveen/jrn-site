@@ -5,7 +5,7 @@ import { FileText, Download, Calendar, Tag, BookOpen } from 'lucide-react';
 
 export default async function PaperPage({ params }: { params: Promise<{ paperId: string }> }) {
   const { paperId } = await params;
-  const submissions = getSubmissions();
+  const submissions = await getSubmissions();
   const paper = submissions.find((s: any) => s.id === paperId);
 
   if (!paper || paper.status !== 'Published') {

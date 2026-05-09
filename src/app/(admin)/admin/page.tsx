@@ -24,7 +24,12 @@ export default function AdminDashboard() {
     try {
       const res = await axios.get('/api/admin/submissions');
       setSubmissions(res.data);
-      if (res.data.length > 0 && !selectedSub) setSelectedSub(res.data[0]);
+      if (selectedSub) {
+        const refreshed = res.data.find((s: Article) => s.id === selectedSub.id);
+        if (refreshed) setSelectedSub(refreshed);
+      } else if (res.data.length > 0) {
+        setSelectedSub(res.data[0]);
+      }
     } catch (err) {}
     setLoading(false);
   };
@@ -220,8 +225,10 @@ https://jiesurt.in.net`;
   const updateStatus = async (paperId: string, status: string, paymentStatus?: string) => {
     try {
       await axios.post('/api/admin/update-status', { paperId, status, paymentStatus });
-      fetchSubmissions();
-    } catch (err) {}
+      await fetchSubmissions();
+    } catch (err: any) {
+      alert('Update failed: ' + (err?.response?.data?.error ?? err?.message ?? 'Unknown error'));
+    }
   };
 
   const uploadFileAndUpdate = async (paperId: string, file: File, field: 'pdfUrl' | 'certificateUrl' | 'paymentScreenshotUrl') => {
@@ -387,29 +394,6 @@ https://jiesurt.in.net`;
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Stage Management</label>
-                <div className="grid grid-cols-2 gap-2">
-                  <select 
-                    className="col-span-2 border p-2 text-xs font-bold bg-slate-50 focus:bg-white focus:outline-journal-blue" 
-                    value={selectedSub.status} 
-                    onChange={e => updateStatus(selectedSub.id, e.target.value)}
-                  >
-                    <option>Received</option>
-                    <option>Under Review</option>
-                    <option>Accepted</option>
-                    <option>Published</option>
-                    <option>Rejected</option>
-                  </select>
-                  <button 
-                    onClick={() => updateStatus(selectedSub.id, selectedSub.status, selectedSub.paymentStatus === 'Paid' ? 'Pending' : 'Paid')}
-                    className={`text-[9px] p-2 border font-bold uppercase transition-all ${selectedSub.paymentStatus === 'Paid' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-500 border-red-200'}`}
-                  >
-                    {selectedSub.paymentStatus === 'Paid' ? 'Revoke Payment' : 'Confirm Payment'}
-                  </button>
-                </div>
-              </div>
-
               <div className="space-y-1.5">
                 <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-2 border-b border-slate-100 pb-1">Manual Email Triggers</label>
                 <div className="grid grid-cols-1 gap-1.5">
@@ -520,6 +504,40 @@ https://jiesurt.in.net`;
             
             <form onSubmit={saveEditedSub} className="flex-1 flex flex-col overflow-hidden">
               <div className="p-6 overflow-y-auto flex-1 space-y-4">
+
+                {/* Stage Management — immediate save */}
+                <div className="bg-slate-50 border border-slate-200 rounded p-3">
+                  <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-2">Stage Management</label>
+                  <div className="flex gap-2">
+                    <select
+                      className="flex-1 border p-2 text-xs font-bold bg-white focus:outline-journal-blue"
+                      value={editModal.status}
+                      onChange={async e => {
+                        const newStatus = e.target.value as Article['status'];
+                        setEditModal({ ...editModal, status: newStatus });
+                        await updateStatus(editModal.id, newStatus);
+                      }}
+                    >
+                      <option>Received</option>
+                      <option>Under Review</option>
+                      <option>Accepted</option>
+                      <option>Published</option>
+                      <option>Rejected</option>
+                    </select>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const newPayment = editModal.paymentStatus === 'Paid' ? 'Pending' : 'Paid';
+                        setEditModal({ ...editModal, paymentStatus: newPayment });
+                        await updateStatus(editModal.id, editModal.status, newPayment);
+                      }}
+                      className={`text-[9px] px-3 border font-bold uppercase transition-all shrink-0 ${editModal.paymentStatus === 'Paid' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-500 border-red-200'}`}
+                    >
+                      {editModal.paymentStatus === 'Paid' ? 'Revoke Payment' : 'Confirm Payment'}
+                    </button>
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="col-span-2">
                     <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Title</label>
@@ -568,20 +586,29 @@ https://jiesurt.in.net`;
                   </div>
                   <div>
                     <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Volume</label>
-                    <input 
-                      type="number" 
-                      className="w-full border border-slate-300 p-2 text-sm focus:outline-journal-blue text-slate-800" 
-                      value={editModal.volume} 
+                    <input
+                      type="number"
+                      className="w-full border border-slate-300 p-2 text-sm focus:outline-journal-blue text-slate-800"
+                      value={editModal.volume}
                       onChange={e => setEditModal({...editModal, volume: parseInt(e.target.value) || 0})}
                     />
                   </div>
                   <div>
                     <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Issue</label>
-                    <input 
-                      type="number" 
-                      className="w-full border border-slate-300 p-2 text-sm focus:outline-journal-blue text-slate-800" 
-                      value={editModal.issue} 
+                    <input
+                      type="number"
+                      className="w-full border border-slate-300 p-2 text-sm focus:outline-journal-blue text-slate-800"
+                      value={editModal.issue}
                       onChange={e => setEditModal({...editModal, issue: parseInt(e.target.value) || 0})}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Submission Date</label>
+                    <input
+                      type="text"
+                      className="w-full border border-slate-300 p-2 text-sm focus:outline-journal-blue text-slate-800"
+                      value={editModal.submissionDate}
+                      onChange={e => setEditModal({...editModal, submissionDate: e.target.value})}
                     />
                   </div>
 
@@ -592,14 +619,26 @@ https://jiesurt.in.net`;
                       <div className="border border-slate-200 p-3 bg-slate-50 rounded">
                         <p className="text-[10px] font-bold text-slate-600 mb-1">Manuscript PDF</p>
                         <div className="flex items-center gap-2">
-                          <input 
-                            type="file" 
+                          <input
+                            type="file"
                             accept=".pdf"
                             className="text-[10px] w-full"
                             onChange={e => e.target.files?.[0] && uploadFileAndUpdate(editModal.id, e.target.files[0], 'pdfUrl')}
                           />
                         </div>
                         {editModal.pdfUrl && <a href={editModal.pdfUrl} target="_blank" rel="noreferrer" className="text-[9px] text-journal-blue hover:underline mt-1 inline-block">View Current PDF</a>}
+                      </div>
+
+                      <div className="border border-slate-200 p-3 bg-slate-50 rounded">
+                        <p className="text-[10px] font-bold text-slate-600 mb-1">Author Certificate</p>
+                        <p className="text-[9px] text-slate-400 mb-1">{editModal.authors}</p>
+                        <input
+                          type="file"
+                          accept=".pdf,image/*"
+                          className="text-[10px] w-full"
+                          onChange={e => e.target.files?.[0] && uploadFileAndUpdate(editModal.id, e.target.files[0], 'certificateUrl')}
+                        />
+                        {editModal.certificateUrl && <a href={editModal.certificateUrl} target="_blank" rel="noreferrer" className="text-[9px] text-green-600 hover:underline mt-1 inline-block font-bold">View Certificate</a>}
                       </div>
                       
                       <div className="border border-slate-200 p-3 bg-slate-50 rounded col-span-2">

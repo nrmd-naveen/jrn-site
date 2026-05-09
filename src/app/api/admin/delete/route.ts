@@ -1,10 +1,13 @@
 import { NextResponse } from 'next/server';
-import { getSubmissions, saveSubmissions } from '@/lib/db';
+import { deleteSubmission } from '@/lib/db';
 
 export async function POST(req: Request) {
-  const { paperId } = await req.json();
-  let submissions = getSubmissions();
-  submissions = submissions.filter((s: any) => s.id !== paperId);
-  saveSubmissions(submissions);
-  return NextResponse.json({ success: true });
+  try {
+    const { paperId } = await req.json();
+    await deleteSubmission(paperId);
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error('delete error:', err);
+    return NextResponse.json({ error: String(err) }, { status: 500 });
+  }
 }

@@ -80,7 +80,7 @@ export default function HomePage() {
 
           <div className="space-y-4">
             {loading ? (
-              <div className="text-center py-10 text-slate-400 italic text-sm">Synchronizing with peer-review database...</div>
+              <div className="text-center py-10 text-slate-400 text-sm">Loading...</div>
             ) : articles.length > 0 ? (
               articles.map(art => (
                 <div key={art.id} className="border border-slate-200 p-4 rounded-none hover:bg-slate-50 transition-colors group">

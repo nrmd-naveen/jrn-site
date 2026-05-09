@@ -1,0 +1,20 @@
+{
+  "/api/admin/delete/route": "app/api/admin/delete/route.js",
+  "/api/admin/login/route": "app/api/admin/login/route.js",
+  "/api/admin/submissions/route": "app/api/admin/submissions/route.js",
+  "/api/admin/update-status/route": "app/api/admin/update-status/route.js",
+  "/api/admin/upload-file/route": "app/api/admin/upload-file/route.js",
+  "/api/articles/route": "app/api/articles/route.js",
+  "/api/auth/author/route": "app/api/auth/author/route.js",
+  "/api/submit/route": "app/api/submit/route.js",
+  "/api/email/send/route": "app/api/email/send/route.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/(main)/articles/page": "app/(main)/articles/page.js",
+  "/(admin)/admin/page": "app/(admin)/admin/page.js",
+  "/(main)/author-home/page": "app/(main)/author-home/page.js",
+  "/(main)/certificates/[paperId]/page": "app/(main)/certificates/[paperId]/page.js",
+  "/(main)/page": "app/(main)/page.js",
+  "/(main)/paper/[paperId]/page": "app/(main)/paper/[paperId]/page.js",
+  "/(main)/pay/[paperId]/page": "app/(main)/pay/[paperId]/page.js",
+  "/(main)/submit/page": "app/(main)/submit/page.js"
+}

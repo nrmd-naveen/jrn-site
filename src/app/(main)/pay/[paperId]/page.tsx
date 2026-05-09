@@ -2,9 +2,10 @@ import { getSubmissions } from '@/lib/db';
 import { notFound } from 'next/navigation';
 import PaymentClient from './PaymentClient';
 
-export default function PayPage({ params }: { params: { paperId: string } }) {
+export default async function PayPage({ params }: { params: Promise<{ paperId: string }> }) {
+  const { paperId } = await params;
   const submissions = getSubmissions();
-  const paper = submissions.find((s: any) => s.id === params.paperId);
+  const paper = submissions.find((s: any) => s.id === paperId);
 
   if (!paper) {
     return notFound();

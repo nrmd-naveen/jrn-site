@@ -3,9 +3,10 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { FileText, Download, Calendar, Tag, BookOpen } from 'lucide-react';
 
-export default function PaperPage({ params }: { params: { paperId: string } }) {
+export default async function PaperPage({ params }: { params: Promise<{ paperId: string }> }) {
+  const { paperId } = await params;
   const submissions = getSubmissions();
-  const paper = submissions.find((s: any) => s.id === params.paperId);
+  const paper = submissions.find((s: any) => s.id === paperId);
 
   if (!paper || paper.status !== 'Published') {
     return notFound();

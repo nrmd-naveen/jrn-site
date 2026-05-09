@@ -224,7 +224,7 @@ https://jiesurt.in.net`;
     } catch (err) {}
   };
 
-  const uploadFileAndUpdate = async (paperId: string, file: File, field: 'pdfUrl' | 'certificateUrl') => {
+  const uploadFileAndUpdate = async (paperId: string, file: File, field: 'pdfUrl' | 'certificateUrl' | 'paymentScreenshotUrl') => {
     const formData = new FormData();
     formData.append('pdf', file);
     try {

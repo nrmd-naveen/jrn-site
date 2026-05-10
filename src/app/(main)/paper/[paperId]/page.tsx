@@ -46,9 +46,14 @@ export default async function PaperPage({ params }: { params: Promise<{ paperId:
 
           <section>
             <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">Authors</h2>
-            <p className="text-lg font-bold text-slate-800">
-              {paper.authors}
-            </p>
+            <div className="space-y-1">
+              <p className="text-lg font-bold text-slate-800">{paper.authors}</p>
+              {paper.teamMembers && paper.teamMembers.length > 0 && (
+                paper.teamMembers.map((member: { name: string; certificateUrl?: string }, i: number) => (
+                  <p key={i} className="text-lg font-bold text-slate-800">{member.name}</p>
+                ))
+              )}
+            </div>
           </section>
         </div>
 

@@ -25,6 +25,24 @@ export default async function PayPage({ params }: { params: Promise<{ paperId: s
         </div>
       </div>
 
+      <div className="bg-amber-50 border border-amber-200 rounded p-5 mb-8 shadow-sm">
+        <h2 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-4 border-b border-amber-200 pb-2">Fee Breakdown</h2>
+        <div className="space-y-2 text-sm">
+          <div className="flex justify-between">
+            <span className="text-slate-600 font-medium">Publication Fee <span className="text-xs text-slate-400">(incl. GST)</span></span>
+            <span className="font-bold text-slate-800">₹1,850</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-slate-600 font-medium">Payment Processing Fee</span>
+            <span className="font-bold text-slate-800">₹149</span>
+          </div>
+          <div className="flex justify-between border-t border-amber-300 pt-3 mt-3">
+            <span className="font-black text-slate-800 uppercase tracking-wide">Total Payable</span>
+            <span className="font-black text-journal-navy text-base">₹1,999</span>
+          </div>
+        </div>
+      </div>
+
       <PaymentClient paperId={paper.id} currentStatus={paper.paymentStatus} currentScreenshot={paper.paymentScreenshotUrl} />
     </div>
   );

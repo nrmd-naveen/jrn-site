@@ -1,6 +1,13 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+
+const s3 = new S3Client({
+  region: process.env.S3_REGION!,
+  credentials: {
+    accessKeyId: process.env.S3_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
+  },
+});
 
 export async function POST(req: Request) {
   try {
@@ -11,16 +18,19 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
     }
 
-    const PAPERS_DIR = path.join(process.cwd(), 'public', 'papers');
-    if (!fs.existsSync(PAPERS_DIR)) fs.mkdirSync(PAPERS_DIR, { recursive: true });
-    
-    const fileName = `${Date.now()}-${file.name}`;
-    const filePath = path.join(PAPERS_DIR, fileName);
+    const fileName = `papers/${Date.now()}-${file.name}`;
     const buffer = Buffer.from(await file.arrayBuffer());
-    fs.writeFileSync(filePath, buffer);
-    const pdfUrl = `/papers/${fileName}`;
 
-    return NextResponse.json({ success: true, path: pdfUrl });
+    await s3.send(new PutObjectCommand({
+      Bucket: process.env.S3_BUCKET_NAME!,
+      Key: fileName,
+      Body: buffer,
+      ContentType: file.type || 'application/octet-stream',
+    }));
+
+    const fileUrl = `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.S3_REGION}.amazonaws.com/${fileName}`;
+
+    return NextResponse.json({ success: true, path: fileUrl });
   } catch (error) {
     console.error('File upload error:', error);
     return NextResponse.json({ error: 'Failed to upload file' }, { status: 500 });

@@ -234,8 +234,9 @@ https://jiesurt.in.net`;
   const uploadFileAndUpdate = async (paperId: string, file: File, field: 'pdfUrl' | 'certificateUrl' | 'paymentScreenshotUrl') => {
     const formData = new FormData();
     formData.append('pdf', file);
+    const uploadRoute = field === 'pdfUrl' ? '/api/admin/upload-local' : '/api/admin/upload-file';
     try {
-      const res = await axios.post('/api/admin/upload-file', formData);
+      const res = await axios.post(uploadRoute, formData);
       await axios.post('/api/admin/update-status', { paperId, [field]: res.data.path });
       fetchSubmissions();
       alert(`Asset linked to ${paperId}`);
